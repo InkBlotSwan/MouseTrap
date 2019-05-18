@@ -68,11 +68,13 @@ namespace MouseRestrict
                 setTrapProfile.Enabled = false;
                 if (firstRun)
                 {
-                    settingsfiletest.load();
-                    x1 = settingsfiletest._settings.topLeftX;
-                    y1 = settingsfiletest._settings.topLeftY;
-                    x2 = settingsfiletest._settings.bottomRightX;
-                    y2 = settingsfiletest._settings.bottomRightY;
+                    var settingsfiletoload = new SettingsClass();
+                    settingsfiletoload.load();
+                    x1 = settingsfiletoload._settings.topLeftX;
+                    y1 = settingsfiletoload._settings.topLeftY;
+                    x2 = settingsfiletoload._settings.bottomRightX;
+                    y2 = settingsfiletoload._settings.bottomRightY;
+                    firstRun = false;
                 }
                 t = new System.Threading.Thread(() => TrapMouse(x1, y1, x2, y2));
                 t.IsBackground = true;
@@ -103,6 +105,7 @@ namespace MouseRestrict
         {
             // Give your threads time to exit.
             var settingsfiletest = new SettingsClass();
+            settingsfiletest.Save();
             settingsfiletest.Update(x1, y1, x2, y2);
             settingsfiletest.Save();
             t.Abort();

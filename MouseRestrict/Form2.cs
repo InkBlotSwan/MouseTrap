@@ -27,10 +27,8 @@ namespace MouseRestrict
         // MOUSEDOWN EVENT
         private void button1_Click(object sender, EventArgs e)
         {
-            var settingsfiletest = new SettingsClass();
             Form1.x1 = Cursor.Position.X;
             Form1.y1 = Cursor.Position.Y;
-            settingsfiletest.Save();
             button1.Enabled = false;
             button1.Visible = false;
             button2.Enabled = true;
@@ -41,7 +39,11 @@ namespace MouseRestrict
         {
             Form1.x2 = Cursor.Position.X;
             Form1.y2 = Cursor.Position.Y;
-            
+
+            var settingsfiletest = new SettingsClass();
+            settingsfiletest.Update(Form1.x1, Form1.y1, Form1.x2, Form1.y2);
+            settingsfiletest.Save();
+
             button2.Enabled = false;
             button2.Visible = false;
             button1.Enabled = true;
