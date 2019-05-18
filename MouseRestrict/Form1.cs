@@ -18,23 +18,13 @@ namespace MouseRestrict
             InitializeComponent();
         }
 
-        public void TrapMouse()
+        public void TrapMouse(int x1, int y1, int x2, int y2)
         {
             bool running = true;
 
             var settingsfiletest = new SettingsClass();
             while (running)
             {
-                //Testing xml loading.
-                settingsfiletest.load();
-
-
-                // Variables for top-left corner.
-                int x1 = settingsfiletest._settings.topLeftX;
-                int y1 = settingsfiletest._settings.topLeftY;
-                // Variables for bottom-right corner.
-                int x2 = settingsfiletest._settings.bottomRightX; 
-                int y2 = settingsfiletest._settings.bottomRightY;
 
                 if (Cursor.Position.X < x1)
                 {
@@ -55,7 +45,11 @@ namespace MouseRestrict
                 }
             }
         }
-
+        bool firstRun = true;
+        public static int x1;
+        public static int y1;
+        public static int x2;
+        public static int y2;
         // Button click Event.
         private void button1_Click(object sender, EventArgs e)
         {
@@ -72,8 +66,15 @@ namespace MouseRestrict
                 button2.Enabled = true;
                 button2.Visible = true;
                 setTrapProfile.Enabled = false;
-
-                t = new System.Threading.Thread(TrapMouse);
+                if (firstRun)
+                {
+                    settingsfiletest.load();
+                    x1 = settingsfiletest._settings.topLeftX;
+                    y1 = settingsfiletest._settings.topLeftY;
+                    x2 = settingsfiletest._settings.bottomRightX;
+                    y2 = settingsfiletest._settings.bottomRightY;
+                }
+                t = new System.Threading.Thread(() => TrapMouse(x1, y1, x2, y2));
                 t.IsBackground = true;
                 t.Start();
             }
@@ -101,6 +102,9 @@ namespace MouseRestrict
         private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
         {
             // Give your threads time to exit.
+            var settingsfiletest = new SettingsClass();
+            settingsfiletest.Update(x1, y1, x2, y2);
+            settingsfiletest.Save();
             t.Abort();
             while (t.IsAlive)
             {
