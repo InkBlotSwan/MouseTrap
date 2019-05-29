@@ -120,6 +120,25 @@ namespace MouseRestrict
 
         }
 
+        private void Form1_SizeChanged(object sender, EventArgs e)
+        {
+            //if the form is minimized  
+            //hide it from the task bar  
+            //and show the system tray icon (represented by the NotifyIcon control)  
+            if (WindowState == FormWindowState.Minimized)
+            {
+                Hide();
+                mouseNotifyIcon.Visible = true;
+            }
+        }
+
+        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+            mouseNotifyIcon.Visible = false;
+        }
+
         // Called to specify the area to trap the mouse within.
         Form2 secondform = new Form2();
         private void setTrapProfile_Click(object sender, EventArgs e)

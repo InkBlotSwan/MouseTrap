@@ -28,12 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.button1 = new System.Windows.Forms.Button();
             this.Flag = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.setTrapProfile = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.mouseNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.SuspendLayout();
             // 
             // button1
@@ -86,6 +88,12 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "Set the area to trap your cursor in.";
             // 
+            // mouseNotifyIcon
+            // 
+            this.mouseNotifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("mouseNotifyIcon.Icon")));
+            this.mouseNotifyIcon.Text = "MouseTrap";
+            this.mouseNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -100,6 +108,7 @@
             this.Name = "Form1";
             this.Text = "MouseTrap!";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Resize += new System.EventHandler(this.Form1_SizeChanged);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -112,6 +121,7 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button setTrapProfile;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NotifyIcon mouseNotifyIcon;
     }
 }
 
