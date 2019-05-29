@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace MouseRestrict
 {
@@ -45,6 +46,57 @@ namespace MouseRestrict
                 }
             }
         }
+
+
+        /// <summary>
+        /// Process monitoring
+        /// </summary>
+        /// Views the currently running processes to automatically trap based on running programs.
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void monitorProcess()
+        {
+            Process[] listOfProcesses = Process.GetProcesses();
+            foreach (Process theprocess in listOfProcesses)
+            {
+                Console.WriteLine(theprocess.ProcessName);
+                if (theprocess.ProcessName == "Vampire")
+                {
+                    //Check settings have been set.
+                    var settingsfiletest = new SettingsClass();
+                    bool exists = settingsfiletest.exists();
+
+                    if (exists)
+                    {
+                        // Visual identifiers.
+                        Flag.Text = "Trap is Running";
+                        button1.Enabled = false;
+                        button1.Visible = false;
+                        button2.Enabled = true;
+                        button2.Visible = true;
+                        setTrapProfile.Enabled = false;
+                        if (firstRun)
+                        {
+                            var settingsfiletoload = new SettingsClass();
+                            settingsfiletoload.load();
+                            x1 = settingsfiletoload._settings.topLeftX;
+                            y1 = settingsfiletoload._settings.topLeftY;
+                            x2 = settingsfiletoload._settings.bottomRightX;
+                            y2 = settingsfiletoload._settings.bottomRightY;
+                            firstRun = false;
+                        }
+                        t = new System.Threading.Thread(() => TrapMouse(x1, y1, x2, y2));
+                        t.IsBackground = true;
+                        t.Start();
+                    }
+                    else
+                    {
+                        
+                    }
+                }
+            }
+        }
+
         bool firstRun = true;
         public static int x1;
         public static int y1;
@@ -145,6 +197,11 @@ namespace MouseRestrict
         {
             // TODO! OPEN NEW FORM, FULL SCREEN, ALLOW FOR DRAWING AREA TO TRAP.
             secondform.Show();
+        }
+
+        private void Button3_Click(object sender, EventArgs e)
+        {
+            monitorProcess();
         }
     }
     

@@ -36,6 +36,7 @@
             this.setTrapProfile = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.mouseNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.button3 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -94,11 +95,22 @@
             this.mouseNotifyIcon.Text = "MouseTrap";
             this.mouseNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(151, 81);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(108, 23);
+            this.button3.TabIndex = 5;
+            this.button3.Text = "View Processes";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.Button3_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 188);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.setTrapProfile);
             this.Controls.Add(this.button2);
@@ -122,6 +134,7 @@
         private System.Windows.Forms.Button setTrapProfile;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NotifyIcon mouseNotifyIcon;
+        private System.Windows.Forms.Button button3;
     }
 }
 
