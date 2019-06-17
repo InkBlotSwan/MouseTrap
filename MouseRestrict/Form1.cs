@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Management;
 
 namespace MouseRestrict
 {
@@ -56,43 +57,23 @@ namespace MouseRestrict
         /// <param name="e"></param>
         public void monitorProcess()
         {
-            Process[] listOfProcesses = Process.GetProcesses();
-            foreach (Process theprocess in listOfProcesses)
+            var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
+            using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+            using (var results = searcher.Get())
             {
-                Console.WriteLine(theprocess.ProcessName);
-                if (theprocess.ProcessName == "Vampire")
+                var query = from p in Process.GetProcesses()
+                            join mo in results.Cast<ManagementObject>()
+                            on p.Id equals (int)(uint)mo["ProcessId"]
+                            select new
+                            {
+                                Process = p,
+                                Path = (string)mo["ExecutablePath"],
+                                CommandLine = (string)mo["CommandLine"],
+                            };
+                foreach (var item in query)
                 {
-                    //Check settings have been set.
-                    var settingsfiletest = new SettingsClass();
-                    bool exists = settingsfiletest.exists();
-
-                    if (exists)
-                    {
-                        // Visual identifiers.
-                        Flag.Text = "Trap is Running";
-                        button1.Enabled = false;
-                        button1.Visible = false;
-                        button2.Enabled = true;
-                        button2.Visible = true;
-                        setTrapProfile.Enabled = false;
-                        if (firstRun)
-                        {
-                            var settingsfiletoload = new SettingsClass();
-                            settingsfiletoload.load();
-                            x1 = settingsfiletoload._settings.topLeftX;
-                            y1 = settingsfiletoload._settings.topLeftY;
-                            x2 = settingsfiletoload._settings.bottomRightX;
-                            y2 = settingsfiletoload._settings.bottomRightY;
-                            firstRun = false;
-                        }
-                        t = new System.Threading.Thread(() => TrapMouse(x1, y1, x2, y2));
-                        t.IsBackground = true;
-                        t.Start();
-                    }
-                    else
-                    {
-                        
-                    }
+                    // TODO! TRY TO GET CORRECT OUTPUT.
+                    Console.WriteLine(item.Path);
                 }
             }
         }
