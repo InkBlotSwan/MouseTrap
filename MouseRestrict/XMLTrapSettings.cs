@@ -5,23 +5,6 @@ class SettingsClass
 {
     //Settings Variabe, used as an instance of the trapsettings class.
     public TrapSettings _settings;
-    
-
-    /// <summary>
-    /// Create a Settings file if none exists.
-    /// </summary>
-    /// <param name="fileName"></param>
-    public void CreateSettingsFile()
-    {
-
-        XmlSerializer set_serialized = new XmlSerializer(typeof(TrapSettings));
-        _settings = new TrapSettings(1, 1, 1, 1);
-
-        using (StreamWriter xmlfile = new StreamWriter("TrapWindow.xml"))
-        {
-            set_serialized.Serialize(xmlfile, _settings);
-        }
-    }
 
     /// <summary>
     /// Updates the Variables in the settings file.

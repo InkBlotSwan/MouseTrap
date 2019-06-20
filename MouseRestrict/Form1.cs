@@ -93,7 +93,7 @@ namespace MouseRestrict
             if (exists)
             {
                 // Visual identifiers.
-                Flag.Text = "Trap is Running";
+                Flag.Text = "- Trap is Running";
                 button1.Enabled = false;
                 button1.Visible = false;
                 button2.Enabled = true;
@@ -121,7 +121,7 @@ namespace MouseRestrict
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Flag.Text = "Trap is Not Running";
+            Flag.Text = "- Trap is Not Running";
             button1.Enabled = true;
             button1.Visible = true;
             button2.Enabled = false;
@@ -182,7 +182,13 @@ namespace MouseRestrict
 
         private void Button3_Click(object sender, EventArgs e)
         {
-            monitorProcess();
+            OpenFileDialog programSearch = new OpenFileDialog();
+            programSearch.InitialDirectory = @"C:\";
+            programSearch.Title = "Select application to trap";
+            programSearch.DefaultExt = "exe";
+            programSearch.Filter = "exe files (*.exe)|*.exe";
+            programSearch.ShowDialog();
+            Console.WriteLine(programSearch.FileName);
         }
     }
     
