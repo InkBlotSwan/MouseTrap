@@ -31,7 +31,6 @@ namespace MouseRestrict
             var settingsfiletest = new SettingsClass();
             while (running)
             {
-
                 if (Cursor.Position.X < x1)
                 {
                     Cursor.Position = new Point(x1, Cursor.Position.Y);
@@ -49,6 +48,7 @@ namespace MouseRestrict
                 {
                     Cursor.Position = new Point(Cursor.Position.X, y2);
                 }
+                System.Threading.Thread.Sleep(1);
             }
         }
 
@@ -61,36 +61,45 @@ namespace MouseRestrict
         /// <param name="e"></param>
         public void monitorProcess()
         {
-            while (true)
+            bool running = true;
+            while (running)
             {
-                var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
-                using (var searcher = new ManagementObjectSearcher(wmiQueryString))
-                using (var results = searcher.Get())
+                if(Flag.Text != "- Closing")
                 {
-                    var query = from p in Process.GetProcesses()
-                                join mo in results.Cast<ManagementObject>()
-                                on p.Id equals (int)(uint)mo["ProcessId"]
-                                select new
-                                {
-                                    Process = p,
-                                    Path = (string)mo["ExecutablePath"],
-                                    CommandLine = (string)mo["CommandLine"],
-                                };
-                    foreach (var item in query)
+                    var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
+                    using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+                    using (var results = searcher.Get())
                     {
-                        if(item.Path == "C:\\Users\\User\\Documents\\_home\\Games\\Emulator\\GBA\\VisualBoyAdvance-M.exe")
+                        var query = from p in Process.GetProcesses()
+                                    join mo in results.Cast<ManagementObject>()
+                                    on p.Id equals (int)(uint)mo["ProcessId"]
+                                    select new
+                                    {
+                                        Process = p,
+                                        Path = (string)mo["ExecutablePath"],
+                                        CommandLine = (string)mo["CommandLine"],
+                                    };
+                        foreach (var item in query)
                         {
-                            if (Flag.Text != "- Trap is Running")
+                            if (item.Path == "C:\\Users\\User\\Documents\\_home\\Games\\Emulator\\GBA\\VisualBoyAdvance-M.exe")
                             {
-                                this.Invoke(new Action(() => { button1.PerformClick(); }));
+                                if (Flag.Text != "- Trap is Running")
+                                {
+                                    this.Invoke(new Action(() => { button1.PerformClick(); }));
+                                }
                             }
-                        }
-                        else
-                        {
+                            else
+                            {
                                 System.Threading.Thread.Sleep(1);
+                            }
                         }
                     }
                 }
+                else
+                {
+                    running = false;
+                }
+                
             }
         }
 
@@ -155,6 +164,7 @@ namespace MouseRestrict
         private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
         {
             // Give your threads time to exit.
+            Flag.Text = "- Closing";
             var settingsfiletest = new SettingsClass();
             settingsfiletest.Save();
             settingsfiletest.Update(x1, y1, x2, y2);
