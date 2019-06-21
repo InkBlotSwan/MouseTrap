@@ -15,9 +15,13 @@ namespace MouseRestrict
     public partial class Form1 : Form
     {
         System.Threading.Thread t;
+        System.Threading.Thread b;
         public Form1()
         {
             InitializeComponent();
+            b = new System.Threading.Thread(() => monitorProcess());
+            b.IsBackground = true;
+            b.Start();
         }
 
         public void TrapMouse(int x1, int y1, int x2, int y2)
@@ -30,20 +34,20 @@ namespace MouseRestrict
 
                 if (Cursor.Position.X < x1)
                 {
-                    Cursor.Position = new Point(x1 + 1, Cursor.Position.Y);
+                    Cursor.Position = new Point(x1, Cursor.Position.Y);
                 }
                 if (Cursor.Position.Y < y1)
                 {
-                    Cursor.Position = new Point(Cursor.Position.X, y1 + 1);
+                    Cursor.Position = new Point(Cursor.Position.X, y1);
                 }
 
                 if (Cursor.Position.X > x2)
                 {
-                    Cursor.Position = new Point(x2 - 1, Cursor.Position.Y);
+                    Cursor.Position = new Point(x2, Cursor.Position.Y);
                 }
                 if (Cursor.Position.Y > y2)
                 {
-                    Cursor.Position = new Point(Cursor.Position.X, y2 - 1);
+                    Cursor.Position = new Point(Cursor.Position.X, y2);
                 }
             }
         }
@@ -57,23 +61,35 @@ namespace MouseRestrict
         /// <param name="e"></param>
         public void monitorProcess()
         {
-            var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
-            using (var searcher = new ManagementObjectSearcher(wmiQueryString))
-            using (var results = searcher.Get())
+            while (true)
             {
-                var query = from p in Process.GetProcesses()
-                            join mo in results.Cast<ManagementObject>()
-                            on p.Id equals (int)(uint)mo["ProcessId"]
-                            select new
-                            {
-                                Process = p,
-                                Path = (string)mo["ExecutablePath"],
-                                CommandLine = (string)mo["CommandLine"],
-                            };
-                foreach (var item in query)
+                var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
+                using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+                using (var results = searcher.Get())
                 {
-                    // TODO! TRY TO GET CORRECT OUTPUT.
-                    Console.WriteLine(item.Path);
+                    var query = from p in Process.GetProcesses()
+                                join mo in results.Cast<ManagementObject>()
+                                on p.Id equals (int)(uint)mo["ProcessId"]
+                                select new
+                                {
+                                    Process = p,
+                                    Path = (string)mo["ExecutablePath"],
+                                    CommandLine = (string)mo["CommandLine"],
+                                };
+                    foreach (var item in query)
+                    {
+                        if(item.Path == "C:\\Users\\User\\Documents\\_home\\Games\\Emulator\\GBA\\VisualBoyAdvance-M.exe")
+                        {
+                            if (Flag.Text != "- Trap is Running")
+                            {
+                                this.Invoke(new Action(() => { button1.PerformClick(); }));
+                            }
+                        }
+                        else
+                        {
+                                System.Threading.Thread.Sleep(1);
+                        }
+                    }
                 }
             }
         }
@@ -96,6 +112,7 @@ namespace MouseRestrict
                 Flag.Text = "- Trap is Running";
                 button1.Enabled = false;
                 button1.Visible = false;
+                button3.Enabled = false;
                 button2.Enabled = true;
                 button2.Visible = true;
                 setTrapProfile.Enabled = false;
@@ -124,6 +141,7 @@ namespace MouseRestrict
             Flag.Text = "- Trap is Not Running";
             button1.Enabled = true;
             button1.Visible = true;
+            button3.Enabled = true;
             button2.Enabled = false;
             button2.Visible = false;
             setTrapProfile.Enabled = true;
@@ -142,7 +160,8 @@ namespace MouseRestrict
             settingsfiletest.Update(x1, y1, x2, y2);
             settingsfiletest.Save();
             t.Abort();
-            while (t.IsAlive)
+            b.Abort();
+            while (t.IsAlive || b.IsAlive)
             {
                 
             }
