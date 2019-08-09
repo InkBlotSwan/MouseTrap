@@ -62,42 +62,62 @@ namespace MouseRestrict
         public void monitorProcess()
         {
             bool running = true;
+            var settingsfiletest = new SettingsClass();
+            settingsfiletest.load();
+            string filenametowrite = "empty";
+            if (settingsfiletest._settings.listOfPrograms[0] == null)
+            {
+
+            }
+            else
+            {
+                filenametowrite = settingsfiletest._settings.listOfPrograms[0];
+            }
+            
+            Console.WriteLine(filenametowrite);
+            running = false;
             while (running)
             {
-                if(Flag.Text != "- Closing")
+                if (filenametowrite.Length != 0)
                 {
-                    var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
-                    using (var searcher = new ManagementObjectSearcher(wmiQueryString))
-                    using (var results = searcher.Get())
+                    if (Flag.Text != "- Closing")
                     {
-                        var query = from p in Process.GetProcesses()
-                                    join mo in results.Cast<ManagementObject>()
-                                    on p.Id equals (int)(uint)mo["ProcessId"]
-                                    select new
-                                    {
-                                        Process = p,
-                                        Path = (string)mo["ExecutablePath"],
-                                        CommandLine = (string)mo["CommandLine"],
-                                    };
-                        foreach (var item in query)
+                        var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
+                        using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+                        using (var results = searcher.Get())
                         {
-                            if (item.Path == "C:\\Users\\User\\Documents\\_home\\Games\\Emulator\\GBA\\VisualBoyAdvance-M.exe")
+                            var query = from p in Process.GetProcesses()
+                                        join mo in results.Cast<ManagementObject>()
+                                        on p.Id equals (int)(uint)mo["ProcessId"]
+                                        select new
+                                        {
+                                            Process = p,
+                                            Path = (string)mo["ExecutablePath"],
+                                            CommandLine = (string)mo["CommandLine"],
+                                        };
+                            foreach (var item in query)
                             {
-                                if (Flag.Text != "- Trap is Running")
+
+                                Console.WriteLine(filenametowrite);
+                                if (item.Path == filenametowrite)
                                 {
-                                    this.Invoke(new Action(() => { button1.PerformClick(); }));
+                                    if (Flag.Text != "- Trap is Running")
+                                    {
+                                        this.Invoke(new Action(() => { button1.PerformClick(); }));
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                System.Threading.Thread.Sleep(1);
+                                else
+                                {
+
+                                    System.Threading.Thread.Sleep(1);
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    running = false;
+                    else
+                    {
+                        running = false;
+                    }
                 }
                 
             }
@@ -208,7 +228,8 @@ namespace MouseRestrict
             // TODO! OPEN NEW FORM, FULL SCREEN, ALLOW FOR DRAWING AREA TO TRAP.
             secondform.Show();
         }
-
+        string filePathToSave;
+        string[] localPathArray;
         private void Button3_Click(object sender, EventArgs e)
         {
             OpenFileDialog programSearch = new OpenFileDialog();
@@ -217,7 +238,26 @@ namespace MouseRestrict
             programSearch.DefaultExt = "exe";
             programSearch.Filter = "exe files (*.exe)|*.exe";
             programSearch.ShowDialog();
-            Console.WriteLine(programSearch.FileName);
+            filePathToSave = programSearch.FileName;
+
+            var settingsfiletest = new SettingsClass();
+            settingsfiletest.load();
+
+            Array.Resize(ref settingsfiletest._settings.listOfPrograms, settingsfiletest._settings.listOfPrograms.Length + 1);
+            settingsfiletest._settings.listOfPrograms[settingsfiletest._settings.listOfPrograms.Length - 1] = filePathToSave;
+
+            foreach (var item in settingsfiletest._settings.listOfPrograms)
+            {
+                if (item != null)
+                {
+                    //sPLITTING THE STRING IS NOT WORKING.
+                    string[] pathComponents = Regex.Split(item, "\\");
+                    Console.WriteLine(item.ToString());
+                }
+            }
+
+
+            settingsfiletest.Save();
         }
     }
     

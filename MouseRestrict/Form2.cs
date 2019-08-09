@@ -50,9 +50,5 @@ namespace MouseRestrict
             button1.Visible = true;
             this.Hide();
         }
-
-        // MOUSEUP EVENT
-
-
     }
 }

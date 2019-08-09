@@ -4,7 +4,7 @@ using System.IO;
 class SettingsClass
 {
     //Settings Variabe, used as an instance of the trapsettings class.
-    public TrapSettings _settings;
+    public TrapSettings _settings = new TrapSettings();
 
     /// <summary>
     /// Updates the Variables in the settings file.
@@ -15,7 +15,16 @@ class SettingsClass
     /// <param name="Y2"></param>
     public void Update(int X1, int Y1, int X2, int Y2)
     {
-        _settings = new TrapSettings(X1, Y1, X2, Y2);
+        _settings.topLeftX = X1;
+        _settings.topLeftY = Y1;
+        _settings.bottomRightX = X2;
+        _settings.bottomRightY = Y2;
+
+    }
+    public void ListUpdate(string programToAdd)
+    {
+        Array.Resize(ref _settings.listOfPrograms, _settings.listOfPrograms.Length + 1);
+        _settings.listOfPrograms[_settings.listOfPrograms.Length - 1] = programToAdd;
     }
 
     /// <summary>
@@ -82,12 +91,16 @@ public class TrapSettings
 
     public int bottomRightX;
     public int bottomRightY;
+
+    //Array Variable for the list.
+    public string[] listOfPrograms;
     public TrapSettings()
     {
         topLeftX = 0;
         topLeftY = 0;
         bottomRightX = 0;
         bottomRightY = 0;
+        listOfPrograms = new string[1];
     }
 
     public TrapSettings(int X1, int Y1, int X2, int Y2)
@@ -98,3 +111,4 @@ public class TrapSettings
         bottomRightY = Y2;
     }
 }
+
