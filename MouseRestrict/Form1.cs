@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Management;
+using System.Text.RegularExpressions;
 
 namespace MouseRestrict
 {
@@ -73,52 +74,55 @@ namespace MouseRestrict
             {
                 filenametowrite = settingsfiletest._settings.listOfPrograms[0];
             }
-            
-            Console.WriteLine(filenametowrite);
-            running = false;
+
             while (running)
             {
-                if (filenametowrite.Length != 0)
+                foreach (var filePath in settingsfiletest._settings.listOfPrograms)
                 {
-                    if (Flag.Text != "- Closing")
+                    Console.WriteLine(filePath);
+                    if (filenametowrite.Length != 0)
                     {
-                        var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
-                        using (var searcher = new ManagementObjectSearcher(wmiQueryString))
-                        using (var results = searcher.Get())
+                        if (Flag.Text != "- Closing")
                         {
-                            var query = from p in Process.GetProcesses()
-                                        join mo in results.Cast<ManagementObject>()
-                                        on p.Id equals (int)(uint)mo["ProcessId"]
-                                        select new
-                                        {
-                                            Process = p,
-                                            Path = (string)mo["ExecutablePath"],
-                                            CommandLine = (string)mo["CommandLine"],
-                                        };
-                            foreach (var item in query)
+                            var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
+                            using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+                            using (var results = searcher.Get())
                             {
-
-                                Console.WriteLine(filenametowrite);
-                                if (item.Path == filenametowrite)
+                                var query = from p in Process.GetProcesses()
+                                            join mo in results.Cast<ManagementObject>()
+                                            on p.Id equals (int)(uint)mo["ProcessId"]
+                                            select new
+                                            {
+                                                Process = p,
+                                                Path = (string)mo["ExecutablePath"],
+                                                CommandLine = (string)mo["CommandLine"],
+                                            };
+                                foreach (var item in query)
                                 {
-                                    if (Flag.Text != "- Trap is Running")
+                                    // TODO! this check is not working, trap is starting with empty criteria.
+                                    if (item.Path == filePath && item.Path != null)
                                     {
-                                        this.Invoke(new Action(() => { button1.PerformClick(); }));
+                                        Console.WriteLine("item.path: " + item.Path + "| FilePath" + filePath);
+                                        if (Flag.Text != "- Trap is Running")
+                                        {
+                                            this.Invoke(new Action(() => { button1.PerformClick(); }));
+                                        }
                                     }
-                                }
-                                else
-                                {
+                                    else
+                                    {
 
-                                    System.Threading.Thread.Sleep(1);
+                                        System.Threading.Thread.Sleep(1);
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        running = false;
+                        else
+                        {
+                            running = false;
+                        }
                     }
                 }
+                
                 
             }
         }
@@ -251,7 +255,7 @@ namespace MouseRestrict
                 if (item != null)
                 {
                     //sPLITTING THE STRING IS NOT WORKING.
-                    string[] pathComponents = Regex.Split(item, "\\");
+                    //localPathArray = Regex.Split(item, "\\");
                     Console.WriteLine(item.ToString());
                 }
             }
