@@ -41,7 +41,7 @@ namespace MouseRestrict
             Form1.y2 = Cursor.Position.Y;
 
             var settingsfiletest = new SettingsClass();
-            settingsfiletest.Update(Form1.x1, Form1.y1, Form1.x2, Form1.y2);
+            settingsfiletest.Update(Form1.x1, Form1.y1, Form1.x2, Form1.y2, settingsfiletest._settings.listOfPrograms);
             settingsfiletest.Save();
 
             button2.Enabled = false;

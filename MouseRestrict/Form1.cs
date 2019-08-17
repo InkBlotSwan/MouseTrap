@@ -79,7 +79,6 @@ namespace MouseRestrict
             {
                 foreach (var filePath in settingsfiletest._settings.listOfPrograms)
                 {
-                    Console.WriteLine(filePath);
                     if (filenametowrite.Length != 0)
                     {
                         if (Flag.Text != "- Closing")
@@ -191,7 +190,7 @@ namespace MouseRestrict
             Flag.Text = "- Closing";
             var settingsfiletest = new SettingsClass();
             settingsfiletest.Save();
-            settingsfiletest.Update(x1, y1, x2, y2);
+            settingsfiletest.Update(x1, y1, x2, y2, settingsfiletest._settings.listOfPrograms);
             settingsfiletest.Save();
             t.Abort();
             b.Abort();
@@ -233,7 +232,6 @@ namespace MouseRestrict
             secondform.Show();
         }
         string filePathToSave;
-        string[] localPathArray;
         private void Button3_Click(object sender, EventArgs e)
         {
             OpenFileDialog programSearch = new OpenFileDialog();

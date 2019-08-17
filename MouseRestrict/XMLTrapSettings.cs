@@ -13,13 +13,13 @@ class SettingsClass
     /// <param name="Y1"></param>
     /// <param name="X2"></param>
     /// <param name="Y2"></param>
-    public void Update(int X1, int Y1, int X2, int Y2)
+    public void Update(int X1, int Y1, int X2, int Y2, string[] oldList)
     {
         _settings.topLeftX = X1;
         _settings.topLeftY = Y1;
         _settings.bottomRightX = X2;
         _settings.bottomRightY = Y2;
-
+        _settings.listOfPrograms = oldList;
     }
     public void ListUpdate(string programToAdd)
     {
