@@ -20,9 +20,14 @@ namespace MouseRestrict
         public Form1()
         {
             InitializeComponent();
-            b = new System.Threading.Thread(() => monitorProcess());
-            b.IsBackground = true;
-            b.Start();
+            var settingsfiletest = new SettingsClass();
+            bool exists = settingsfiletest.exists();
+            if (exists)
+            {
+                b = new System.Threading.Thread(() => monitorProcess());
+                b.IsBackground = true;
+                b.Start();
+            }
         }
 
         public void TrapMouse(int x1, int y1, int x2, int y2)
@@ -81,6 +86,7 @@ namespace MouseRestrict
                 {
                     if (filenametowrite.Length != 0)
                     {
+                        // Check allowing thread to close.
                         if (Flag.Text != "- Closing")
                         {
                             var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
@@ -98,20 +104,26 @@ namespace MouseRestrict
                                             };
                                 foreach (var item in query)
                                 {
-                                    // TODO! this check is not working, trap is starting with empty criteria.
-                                    if (item.Path == filePath && item.Path != null)
+                                    if (item.Path != null)
                                     {
-                                        Console.WriteLine("item.path: " + item.Path + "| FilePath" + filePath);
-                                        if (Flag.Text != "- Trap is Running")
+                                        int lastIndexLocation = item.Path.LastIndexOf('\\', item.Path.Length - 1);
+                                        String activProg = item.Path.Substring(lastIndexLocation + 1);
+
+                                        if (activProg == filePath)
                                         {
-                                            this.Invoke(new Action(() => { button1.PerformClick(); }));
+                                            if (Flag.Text != "- Trap is Running")
+                                            {
+                                                this.Invoke(new Action(() => { button1.PerformClick(); }));
+                                            }
+                                        }
+                                        else
+                                        {
+
+                                            System.Threading.Thread.Sleep(1);
                                         }
                                     }
-                                    else
-                                    {
-
-                                        System.Threading.Thread.Sleep(1);
-                                    }
+                                    
+                                    
                                 }
                             }
                         }
@@ -228,8 +240,23 @@ namespace MouseRestrict
         Form2 secondform = new Form2();
         private void setTrapProfile_Click(object sender, EventArgs e)
         {
+            bool startAutoTrap = false;
+            var settingsfiletest = new SettingsClass();
+            bool exists = settingsfiletest.exists();
+            if (exists == false)
+            {
+                startAutoTrap = true;
+            }
             // TODO! OPEN NEW FORM, FULL SCREEN, ALLOW FOR DRAWING AREA TO TRAP.
             secondform.Show();
+            settingsfiletest.Save();
+
+            if (startAutoTrap)
+            {
+                b = new System.Threading.Thread(() => monitorProcess());
+                b.IsBackground = true;
+                b.Start();
+            }
         }
         string filePathToSave;
         private void Button3_Click(object sender, EventArgs e)
@@ -244,16 +271,19 @@ namespace MouseRestrict
 
             var settingsfiletest = new SettingsClass();
             settingsfiletest.load();
-
-            Array.Resize(ref settingsfiletest._settings.listOfPrograms, settingsfiletest._settings.listOfPrograms.Length + 1);
-            settingsfiletest._settings.listOfPrograms[settingsfiletest._settings.listOfPrograms.Length - 1] = filePathToSave;
+            if (filePathToSave != "")
+            {
+                Console.WriteLine(filePathToSave);
+                int lastIndexLocation = filePathToSave.LastIndexOf('\\', filePathToSave.Length - 1);
+                filePathToSave = filePathToSave.Substring(lastIndexLocation + 1);
+                Array.Resize(ref settingsfiletest._settings.listOfPrograms, settingsfiletest._settings.listOfPrograms.Length + 1);
+                settingsfiletest._settings.listOfPrograms[settingsfiletest._settings.listOfPrograms.Length - 1] = filePathToSave;
+            }
 
             foreach (var item in settingsfiletest._settings.listOfPrograms)
             {
                 if (item != null)
                 {
-                    //sPLITTING THE STRING IS NOT WORKING.
-                    //localPathArray = Regex.Split(item, "\\");
                     Console.WriteLine(item.ToString());
                 }
             }
