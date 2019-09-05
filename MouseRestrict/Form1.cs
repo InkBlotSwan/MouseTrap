@@ -273,23 +273,43 @@ namespace MouseRestrict
             settingsfiletest.load();
             if (filePathToSave != "")
             {
-                Console.WriteLine(filePathToSave);
+                //Refining the filePath to save to only include file name.
                 int lastIndexLocation = filePathToSave.LastIndexOf('\\', filePathToSave.Length - 1);
                 filePathToSave = filePathToSave.Substring(lastIndexLocation + 1);
-                Array.Resize(ref settingsfiletest._settings.listOfPrograms, settingsfiletest._settings.listOfPrograms.Length + 1);
-                settingsfiletest._settings.listOfPrograms[settingsfiletest._settings.listOfPrograms.Length - 1] = filePathToSave;
-            }
 
-            foreach (var item in settingsfiletest._settings.listOfPrograms)
-            {
-                if (item != null)
+                // Ensure no duplicate entries.
+                bool saveTheFile = true;
+                foreach (var item in settingsfiletest._settings.listOfPrograms)
                 {
-                    Console.WriteLine(item.ToString());
+                    if (item != null)
+                    {
+                        if (item.ToString() == filePathToSave)
+                        {
+                            saveTheFile = false;
+                        }
+                    }
+                }
+
+                // Saving the file to the list.
+                if (saveTheFile)
+                {
+                    Array.Resize(ref settingsfiletest._settings.listOfPrograms, settingsfiletest._settings.listOfPrograms.Length + 1);
+                    settingsfiletest._settings.listOfPrograms[settingsfiletest._settings.listOfPrograms.Length - 1] = filePathToSave;
+                }
+                else
+                {
+                    MessageBox.Show("Program is already being automatically blocked.");
                 }
             }
 
+            
 
-            settingsfiletest.Save();
+            //Display all items in list
+            foreach (var item in settingsfiletest._settings.listOfPrograms)
+            {
+                Console.WriteLine(item);
+            }
+                settingsfiletest.Save();
         }
     }
     
