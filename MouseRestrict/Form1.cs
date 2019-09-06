@@ -19,6 +19,7 @@ namespace MouseRestrict
         System.Threading.Thread b;
         public bool settingsHaveChanged = false;
         public bool isAutomaticTrap;
+        public bool manualOveride;
         public Form1()
         {
             InitializeComponent();
@@ -121,7 +122,7 @@ namespace MouseRestrict
                                     {
                                         endAutoTrap = false;
                                         isAutomaticTrap = true;
-                                        if (Flag.Text != "- Trap is Running")
+                                        if (Flag.Text != "- Trap is Running" && manualOveride == false)
                                         {
                                             this.Invoke(new Action(() => { button1.PerformClick(); }));
                                         }
@@ -139,9 +140,10 @@ namespace MouseRestrict
                         break;
                      }                 
                 }
-                if (endAutoTrap && isAutomaticTrap && running)
+                if (endAutoTrap && isAutomaticTrap && running && Flag.Text == "- Trap is Running")
                 {
                     this.Invoke(new Action(() => { button2.PerformClick(); }));
+                    manualOveride = true;
                 }
             }
         }
@@ -197,6 +199,7 @@ namespace MouseRestrict
             button2.Enabled = false;
             button2.Visible = false;
             setTrapProfile.Enabled = true;
+            manualOveride = true;
             t.Abort();
             while (t.IsAlive)
             {
