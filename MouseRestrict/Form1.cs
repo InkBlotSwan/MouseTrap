@@ -17,6 +17,7 @@ namespace MouseRestrict
     {
         System.Threading.Thread t;
         System.Threading.Thread b;
+        public bool settingsHaveChanged = false;
         public Form1()
         {
             InitializeComponent();
@@ -79,22 +80,17 @@ namespace MouseRestrict
             bool running = true;
             var settingsfiletest = new SettingsClass();
             settingsfiletest.load();
-            string filenametowrite = "empty";
-            if (settingsfiletest._settings.listOfPrograms[0] == null)
-            {
-
-            }
-            else
-            {
-                filenametowrite = settingsfiletest._settings.listOfPrograms[0];
-            }
 
             while (running)
             {
+                //Check if settings have changed.
+                if (settingsHaveChanged)
+                {
+                    settingsfiletest.load();
+                    settingsHaveChanged = false;
+                }
                 foreach (var filePath in settingsfiletest._settings.listOfPrograms)
                 {
-                    if (filenametowrite.Length != 0)
-                    {
                         // Check allowing thread to close.
                         if (Flag.Text != "- Closing")
                         {
@@ -140,7 +136,7 @@ namespace MouseRestrict
                         {
                             running = false;
                         }
-                    }
+                    
                 }
                 
                 
@@ -323,6 +319,7 @@ namespace MouseRestrict
                 }
             }
             settingsfiletest.Save();
+            settingsHaveChanged = true;
         }
 
         // Button to remove highlighted entry from the list of program's to block.
@@ -354,6 +351,7 @@ namespace MouseRestrict
                 }
                 settingsfiletest._settings.listOfPrograms = tempList;
                 settingsfiletest.Save();
+                settingsHaveChanged = true;
             }
         }
     }
