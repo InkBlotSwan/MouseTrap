@@ -24,6 +24,15 @@ namespace MouseRestrict
             bool exists = settingsfiletest.exists();
             if (exists)
             {
+                settingsfiletest.load();
+                foreach (var item in settingsfiletest._settings.listOfPrograms)
+                {
+                    if (item != null)
+                    {
+                        listBox1.Items.Add(item);
+                    }
+                }
+
                 b = new System.Threading.Thread(() => monitorProcess());
                 b.IsBackground = true;
                 b.Start();
@@ -308,6 +317,10 @@ namespace MouseRestrict
             foreach (var item in settingsfiletest._settings.listOfPrograms)
             {
                 Console.WriteLine(item);
+                if(item != null)
+                {
+                    listBox1.Items.Add(item);
+                }
             }
                 settingsfiletest.Save();
         }
