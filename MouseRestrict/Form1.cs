@@ -18,6 +18,7 @@ namespace MouseRestrict
         System.Threading.Thread t;
         System.Threading.Thread b;
         public bool settingsHaveChanged = false;
+        public bool isAutomaticTrap;
         public Form1()
         {
             InitializeComponent();
@@ -78,6 +79,7 @@ namespace MouseRestrict
         public void monitorProcess()
         {
             bool running = true;
+            bool endAutoTrap = false;
             var settingsfiletest = new SettingsClass();
             settingsfiletest.load();
 
@@ -89,57 +91,56 @@ namespace MouseRestrict
                     settingsfiletest.load();
                     settingsHaveChanged = false;
                 }
+                endAutoTrap = true;
                 foreach (var filePath in settingsfiletest._settings.listOfPrograms)
                 {
-                        // Check allowing thread to close.
-                        if (Flag.Text != "- Closing")
+                    // Check allowing thread to close.
+                    if (Flag.Text != "- Closing")
+                    {
+                        var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
+                        using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+                        using (var results = searcher.Get())
                         {
-                            var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
-                            using (var searcher = new ManagementObjectSearcher(wmiQueryString))
-                            using (var results = searcher.Get())
+                          var query = from p in Process.GetProcesses()
+                             join mo in results.Cast<ManagementObject>()
+                             on p.Id equals (int)(uint)mo["ProcessId"]
+                             select new
+                             {
+                                 Process = p,
+                                 Path = (string)mo["ExecutablePath"],
+                                 CommandLine = (string)mo["CommandLine"],
+                             };
+                            foreach (var item in query)
                             {
-                                var query = from p in Process.GetProcesses()
-                                            join mo in results.Cast<ManagementObject>()
-                                            on p.Id equals (int)(uint)mo["ProcessId"]
-                                            select new
-                                            {
-                                                Process = p,
-                                                Path = (string)mo["ExecutablePath"],
-                                                CommandLine = (string)mo["CommandLine"],
-                                            };
-                                foreach (var item in query)
+                                if (item.Path != null)
                                 {
-                                    if (item.Path != null)
+                                    int lastIndexLocation = item.Path.LastIndexOf('\\', item.Path.Length - 1);
+                                    String activProg = item.Path.Substring(lastIndexLocation + 1);
+
+                                    if (activProg == filePath)
                                     {
-                                        int lastIndexLocation = item.Path.LastIndexOf('\\', item.Path.Length - 1);
-                                        String activProg = item.Path.Substring(lastIndexLocation + 1);
-
-                                        if (activProg == filePath)
+                                        endAutoTrap = false;
+                                        isAutomaticTrap = true;
+                                        if (Flag.Text != "- Trap is Running")
                                         {
-                                            if (Flag.Text != "- Trap is Running")
-                                            {
-                                                this.Invoke(new Action(() => { button1.PerformClick(); }));
-                                            }
+                                            this.Invoke(new Action(() => { button1.PerformClick(); }));
                                         }
-                                        else
-                                        {
-
-                                            System.Threading.Thread.Sleep(1);
-                                        }
+                                        break;
                                     }
-                                    
-                                    
-                                }
+
+                                }          
                             }
                         }
-                        else
-                        {
-                            running = false;
-                        }
-                    
+                    }
+                     else
+                     {
+                        running = false;
+                     }                 
                 }
-                
-                
+                if (endAutoTrap && isAutomaticTrap)
+                {
+                    this.Invoke(new Action(() => { button2.PerformClick(); }));
+                }
             }
         }
 
