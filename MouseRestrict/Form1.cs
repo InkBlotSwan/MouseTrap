@@ -131,13 +131,15 @@ namespace MouseRestrict
                                 }          
                             }
                         }
+
                     }
                      else
                      {
                         running = false;
+                        break;
                      }                 
                 }
-                if (endAutoTrap && isAutomaticTrap)
+                if (endAutoTrap && isAutomaticTrap && running)
                 {
                     this.Invoke(new Action(() => { button2.PerformClick(); }));
                 }
