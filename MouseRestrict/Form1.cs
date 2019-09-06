@@ -311,7 +311,7 @@ namespace MouseRestrict
                 }
             }
 
-            
+            listBox1.Items.Clear();
 
             //Display all items in list
             foreach (var item in settingsfiletest._settings.listOfPrograms)
@@ -322,7 +322,39 @@ namespace MouseRestrict
                     listBox1.Items.Add(item);
                 }
             }
+            settingsfiletest.Save();
+        }
+
+        // Button to remove highlighted entry from the list of program's to block.
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedItem != null)
+            {
+                // List to replace the old settings list.
+                string[] tempList = new string[0];
+
+                var settingsfiletest = new SettingsClass();
+                settingsfiletest.load();
+
+                // Remove the program.
+                foreach (var item in settingsfiletest._settings.listOfPrograms)
+                {
+                    if (item != null && listBox1.SelectedItem != null)
+                    {
+                        if (item == listBox1.SelectedItem.ToString())
+                        {
+                            listBox1.Items.Remove(item);
+                        }
+                        else
+                        {
+                            Array.Resize(ref tempList, tempList.Length + 1);
+                            tempList[tempList.Length - 1] = item;
+                        }
+                    }
+                }
+                settingsfiletest._settings.listOfPrograms = tempList;
                 settingsfiletest.Save();
+            }
         }
     }
     
