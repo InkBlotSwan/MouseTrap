@@ -312,7 +312,6 @@ namespace MouseRestrict
             //Display all items in list
             foreach (var item in settingsfiletest._settings.listOfPrograms)
             {
-                Console.WriteLine(item);
                 if(item != null)
                 {
                     listBox1.Items.Add(item);

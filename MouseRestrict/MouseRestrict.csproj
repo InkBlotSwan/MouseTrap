@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{604FCACB-7521-4EEA-B057-38132F3EA1BF}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>MouseRestrict</RootNamespace>
     <AssemblyName>MouseRestrict</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
