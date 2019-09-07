@@ -125,6 +125,7 @@ namespace MouseRestrict
                                         if (Flag.Text != "- Trap is Running" && manualOveride == false)
                                         {
                                             this.Invoke(new Action(() => { button1.PerformClick(); }));
+                                            manualOveride = false;
                                         }
                                         break;
                                     }
@@ -140,10 +141,10 @@ namespace MouseRestrict
                         break;
                      }                 
                 }
-                if (endAutoTrap && isAutomaticTrap && running && Flag.Text == "- Trap is Running")
+                if (endAutoTrap && isAutomaticTrap && running && Flag.Text == "- Trap is Running" && manualOveride == false)
                 {
                     this.Invoke(new Action(() => { button2.PerformClick(); }));
-                    manualOveride = true;
+                    manualOveride = false;
                 }
             }
         }
@@ -183,6 +184,7 @@ namespace MouseRestrict
                 t = new System.Threading.Thread(() => TrapMouse(x1, y1, x2, y2));
                 t.IsBackground = true;
                 t.Start();
+                manualOveride = true;
             }
             else
             {
@@ -274,7 +276,7 @@ namespace MouseRestrict
         {
             OpenFileDialog programSearch = new OpenFileDialog();
             programSearch.InitialDirectory = @"C:\";
-            programSearch.Title = "Select application to trap";
+            programSearch.Title = "Browse to the application to trap";
             programSearch.DefaultExt = "exe";
             programSearch.Filter = "exe files (*.exe)|*.exe";
             programSearch.ShowDialog();
