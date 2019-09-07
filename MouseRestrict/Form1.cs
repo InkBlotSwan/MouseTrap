@@ -20,11 +20,13 @@ namespace MouseRestrict
         public bool settingsHaveChanged = false;
         public bool isAutomaticTrap;
         public bool manualOveride;
+        public bool closing = false;
         public Form1()
         {
             InitializeComponent();
             var settingsfiletest = new SettingsClass();
             bool exists = settingsfiletest.exists();
+            int count = 0;
             if (exists)
             {
                 settingsfiletest.load();
@@ -33,12 +35,22 @@ namespace MouseRestrict
                     if (item != null)
                     {
                         listBox1.Items.Add(item);
+                        count++;
                     }
+                }
+                if(count == 0)
+                {
+                    button4.Enabled = false;
                 }
 
                 b = new System.Threading.Thread(() => monitorProcess());
                 b.IsBackground = true;
                 b.Start();
+            }
+            else
+            {
+                button3.Enabled = false;
+                button4.Enabled = false;
             }
         }
 
@@ -92,11 +104,17 @@ namespace MouseRestrict
                     settingsfiletest.load();
                     settingsHaveChanged = false;
                 }
+                else
+                {
+                    button4.Enabled = true;
+                }
+
+                // Check the list of programs.
                 endAutoTrap = true;
                 foreach (var filePath in settingsfiletest._settings.listOfPrograms)
                 {
                     // Check allowing thread to close.
-                    if (Flag.Text != "- Closing")
+                    if (!closing)
                     {
                         var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
                         using (var searcher = new ManagementObjectSearcher(wmiQueryString))
@@ -212,6 +230,7 @@ namespace MouseRestrict
         private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
         {
             // Give your threads time to exit.
+            closing = true;
             Flag.Text = "- Closing";
             var settingsfiletest = new SettingsClass();
             settingsfiletest.Save();
@@ -253,16 +272,24 @@ namespace MouseRestrict
         Form2 secondform = new Form2();
         private void setTrapProfile_Click(object sender, EventArgs e)
         {
+            bool enableButton3 = false;
             bool startAutoTrap = false;
             var settingsfiletest = new SettingsClass();
             bool exists = settingsfiletest.exists();
             if (exists == false)
             {
                 startAutoTrap = true;
+                enableButton3 = true;
             }
-            // TODO! OPEN NEW FORM, FULL SCREEN, ALLOW FOR DRAWING AREA TO TRAP.
+
+            // Open second form, get user input.
             secondform.Show();
             settingsfiletest.Save();
+
+            if (enableButton3)
+            {
+                button3.Enabled = true;
+            }
 
             if (startAutoTrap)
             {
