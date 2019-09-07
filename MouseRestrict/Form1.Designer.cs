@@ -88,9 +88,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(92, 18);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(173, 13);
+            this.label1.Size = new System.Drawing.Size(194, 13);
             this.label1.TabIndex = 4;
-            this.label1.Text = "- Set the area to trap your cursor in.";
+            this.label1.Text = "- Change the area to trap your cursor in.";
             // 
             // mouseNotifyIcon
             // 

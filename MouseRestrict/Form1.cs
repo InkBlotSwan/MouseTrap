@@ -51,6 +51,10 @@ namespace MouseRestrict
             {
                 button3.Enabled = false;
                 button4.Enabled = false;
+                label1.Text = "- Please set mouse trap parameters.";
+                label1.ForeColor = Color.DarkRed;
+                label2.Text = "- Set trap parameters before choosing programs.";
+                label2.ForeColor = Color.DarkRed;
             }
         }
 
@@ -292,6 +296,15 @@ namespace MouseRestrict
                 b = new System.Threading.Thread(() => monitorProcess());
                 b.IsBackground = true;
                 b.Start();
+            }
+
+            // Change labels to support normal usage.
+            if (label1.Text == "- Please set mouse trap parameters.")
+            {
+                label1.Text = "- Change the area to trap your cursor in.";
+                label1.ForeColor = SystemColors.ControlText;
+                label2.Text = "- Add or remove programs to automatically trap.";
+                label2.ForeColor = SystemColors.ControlText;
             }
         }
         string filePathToSave;
