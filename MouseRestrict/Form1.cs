@@ -104,10 +104,6 @@ namespace MouseRestrict
                     settingsfiletest.load();
                     settingsHaveChanged = false;
                 }
-                else
-                {
-                    button4.Enabled = true;
-                }
 
                 // Check the list of programs.
                 endAutoTrap = true;
@@ -353,6 +349,10 @@ namespace MouseRestrict
                 }
             }
             settingsfiletest.Save();
+            if (settingsfiletest._settings.listOfPrograms.Length >= 0)
+            {
+                button4.Enabled = true;
+            }
             settingsHaveChanged = true;
         }
 
@@ -364,6 +364,8 @@ namespace MouseRestrict
                 // List to replace the old settings list.
                 string[] tempList = new string[0];
 
+                int count = 0;
+
                 var settingsfiletest = new SettingsClass();
                 settingsfiletest.load();
 
@@ -372,6 +374,7 @@ namespace MouseRestrict
                 {
                     if (item != null && listBox1.SelectedItem != null)
                     {
+                        count++;
                         if (item == listBox1.SelectedItem.ToString())
                         {
                             listBox1.Items.Remove(item);
@@ -386,6 +389,10 @@ namespace MouseRestrict
                 settingsfiletest._settings.listOfPrograms = tempList;
                 settingsfiletest.Save();
                 settingsHaveChanged = true;
+                if(settingsfiletest._settings.listOfPrograms.Length == 0)
+                {
+                    button4.Enabled = false;
+                }
             }
         }
     }
