@@ -51,9 +51,9 @@ namespace MouseRestrict
             {
                 button3.Enabled = false;
                 button4.Enabled = false;
-                label1.Text = "- Please set mouse trap parameters.";
+                label1.Text = "- Please set mouse trap area.";
                 label1.ForeColor = Color.DarkRed;
-                label2.Text = "- Set trap parameters before choosing programs.";
+                label2.Text = "- Set trap area before choosing programs to auto trap.";
                 label2.ForeColor = Color.DarkRed;
             }
         }
@@ -299,7 +299,7 @@ namespace MouseRestrict
             }
 
             // Change labels to support normal usage.
-            if (label1.Text == "- Please set mouse trap parameters.")
+            if (label1.Text == "- Please set mouse trap area.")
             {
                 label1.Text = "- Change the area to trap your cursor in.";
                 label1.ForeColor = SystemColors.ControlText;
